@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2019-12-12 23:32:46
+Date: 2019-12-23 23:59:34
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,11 +26,14 @@ CREATE TABLE `blogs` (
   `createtime` bigint(20) NOT NULL DEFAULT '0',
   `author` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of blogs
 -- ----------------------------
+INSERT INTO `blogs` VALUES ('1', '我是天才', '好人就聪明', '24534', 'wstc');
+INSERT INTO `blogs` VALUES ('2', '开车兜风', '晚上开车要开灯哦', '34534', 'wstc');
+INSERT INTO `blogs` VALUES ('3', '好人一生平安', '看网文36变', '1577114820297', 'ok');
 
 -- ----------------------------
 -- Table structure for users
@@ -42,8 +45,10 @@ CREATE TABLE `users` (
   `password` varchar(20) NOT NULL,
   `realname` varchar(10) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
+INSERT INTO `users` VALUES ('1', 'wstc', '123456', '我是天才');
+INSERT INTO `users` VALUES ('2', 'black', '111111', '小黑');

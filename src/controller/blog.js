@@ -1,3 +1,4 @@
+const {exec} = require('../db/mysql')
 /**
  * @des 博客列表
  * @param author
@@ -5,21 +6,11 @@
  * @returns {[null,null]}
  */
 const getList = (author, keyword) => {
-    return [
-        {
-            id: 1,
-            title: '标题A',
-            content: '内容A',
-            createTime: 1575529238652,
-            author: 'wstc',
-        }, {
-            id: 2,
-            title: '标题B',
-            content: '内容B',
-            createTime: 1575529360490,
-            author: '大花',
-        },
-    ]
+    let sql = 'select * from blogs where 1=1 '
+    author && (sql += ` and author = '${author}'`)
+    keyword && (sql += ` and title like '%${keyword}%' `)
+    sql += ` order by createtime desc; `
+    return exec(sql)
 }
 
 /**
@@ -28,23 +19,48 @@ const getList = (author, keyword) => {
  * @returns {{id: number, content: string, title: string}}
  */
 const detailBlog = (id) => {
-    return {
-        id: 1,
-        content: '我是内容',
-        title: '系统通知',
-    }
+    const sql = `select * from blogs where id = '${id}'`
+    return exec(sql).then((res) => {
+        return res[0]
+    })
 }
 
-const updateBlog = (data) => {
-    return true
+/**
+ * @des 创建博客
+ * @param title
+ * @param content
+ * @param author
+ * @returns {*}
+ */
+const newBlog = (title, content, author) => {
+    const createTime = Date.now()
+    const sql = `
+        insert into blogs (title, content, createtime, author) 
+        values ('${title}', '${content}', '${createTime}', '${author}' )
+    `
+    return exec(sql).then( (res) => {
+        // console.log(res)
+        return {
+            id: res.insertId,
+        }
+    })
+}
+
+const updateBlog = (id, title, content) => {
+    const sql = `
+        update blogs set 
+        title = '${title}', content = '${content}' where id = ${id}
+    `
+    return exec(sql).then( (res) => {
+        return res.affectedRows > 0
+    })
 }
 
 const delBlog = (id = 0) => {
-    if (id > 0) {
-        return true
-    } else {
-        return false
-    }
+    const sql = `delete from blogs where id = ${id}`
+    return exec(sql).then( (res) => {
+        return res.affectedRows > 0
+    })
 }
 
-module.exports = {getList, detailBlog, updateBlog, delBlog}
+module.exports = {getList, detailBlog, newBlog, updateBlog, delBlog}

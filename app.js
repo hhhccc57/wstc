@@ -14,15 +14,15 @@ const serverHandle = async (req, res) => {
     const url = req.url
     req.path = url.split('?')[0]
     req.query = queryString.parse(url.split('?')[1])
-    req.body = await getPostDate(req).then((postData) => {
-        return postData
-    })
+    req.body = await getPostDate(req)
 
     const blogDate = handleBlogRouter(req, res)
     if (blogDate) {
-        res.end(
-            JSON.stringify(blogDate),
-        )
+        blogDate.then( (data) => {
+            res.end(
+                JSON.stringify(data),
+            )
+        })
         return
     }
 
