@@ -16,6 +16,17 @@ const serverHandle = async (req, res) => {
     req.query = queryString.parse(url.split('?')[1])
     req.body = await getPostDate(req)
 
+    // 解析cookie
+    req.cookie = {}
+    const cookieStr = req.headers.cookie || '' // k1=1;k2=2;k3=3;
+    cookieStr.split(';').forEach((item) => {
+        if (item) {
+            const flagArr = item.split('=')
+            req.cookie[flagArr[0].trim()] = flagArr[1]
+        }
+    })
+    console.log(req.cookie)
+
     const blogDate = handleBlogRouter(req, res)
     if (blogDate) {
         blogDate.then( (data) => {
@@ -28,9 +39,11 @@ const serverHandle = async (req, res) => {
 
     const userDate = handleUserRouter(req, res)
     if (userDate) {
-        res.end(
-            JSON.stringify(userDate),
-        )
+        userDate.then( (data) => {
+            res.end(
+                JSON.stringify(data),
+            )
+        })
         return
     }
 
