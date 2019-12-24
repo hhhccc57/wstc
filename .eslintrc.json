@@ -18,6 +18,7 @@
         "semi": ["error", "never"], // 关闭语句强制分号结尾
         "indent": ["error", 4], // 缩进
         "require-jsdoc": 0, // JSDoc评论
-        "valid-jsdoc": 0 //jsdoc规则
+        "valid-jsdoc": 0, // jsdoc规则
+        "max-len": ["error", 120] // 此规则强制执行最大行长度
     }
 }
