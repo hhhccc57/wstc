@@ -9,9 +9,8 @@ const getCookieExpires = () => {
 
 const handleUserRouter = (req, res) => {
     const method = req.method
-    /**
-     * @des 登录
-     */
+
+    /** @des 登录 */
     if (method === 'GET' && req.path === '/api/user/login') {
         // const username = req.body['username']
         // const password = req.body['password']
@@ -25,9 +24,9 @@ const handleUserRouter = (req, res) => {
         })
     }
 
-    if (method === 'GET' && req.path === '/api/user/loginTest') {
+    if (method === 'GET' && req.path === '/api/user/logintest') {
         return req.cookie['username'] ?
-            Promise.resolve(new SuccessModel()) :
+            Promise.resolve(new SuccessModel(`带入的coolie: ${req.cookie['username']}`)) :
             Promise.resolve(new ErrorModel('尚未登录'))
     }
 }

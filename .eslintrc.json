@@ -19,6 +19,7 @@
         "indent": ["error", 4], // 缩进
         "require-jsdoc": 0, // JSDoc评论
         "valid-jsdoc": 0, // jsdoc规则
-        "max-len": ["error", 120] // 此规则强制执行最大行长度
+        "max-len": ["error", 120], // 此规则强制执行最大行长度
+        "prefer-const": 0 // 如果一个变量从不重新分配，使用const声明更好。
     }
 }
