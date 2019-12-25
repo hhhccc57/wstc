@@ -3,7 +3,6 @@ const handleUserRouter = require('./src/router/user')
 const queryString = require('querystring')
 const SESSION_DATA = {}
 
-
 /**
  * @des 服务器handle
  * @param req
@@ -14,25 +13,35 @@ const serverHandle = async (req, res) => {
     res.setHeader('Content-type', 'application-json')
 
     global.needSetCookie = false
+    global.userID = ''
     let url = req.url
     req.path = analysisUrl(url.split('?')[0])
     req.query = queryString.parse(url.split('?')[1])
     req.body = await getPostDate(req)
     req.cookie = analysisCookie(req)
-    req.session = analysisSession()
-
+    req.session = analysisSession(req)
 
     /** blog路由 */
     const blogDate = handleBlogRouter(req, res)
     if (blogDate) {
-        blogDate.then( (data) => res.end(JSON.stringify(data)))
+        blogDate.then( (data) => {
+            global.needSetCookie || res.setHeader('Set-cookie', [
+                `userID=${global.userID};path=/;httpOnly;expires=${getCookieExpires()}`,
+            ])
+            res.end(JSON.stringify(data))
+        })
         return
     }
 
     /** user路由 */
     const userDate = handleUserRouter(req, res)
     if (userDate) {
-        userDate.then( (data) => res.end(JSON.stringify(data)))
+        userDate.then( (data) => {
+            global.needSetCookie || res.setHeader('Set-cookie', [
+                `userID=${global.userID};path=/;httpOnly;expires=${getCookieExpires()}`,
+            ])
+            res.end(JSON.stringify(data))
+        })
         return
     }
 
@@ -101,10 +110,28 @@ const analysisUrl = (url) => {
     return res
 }
 
-const analysisSession = () => {
+/**
+ * @des 解析 session
+ * @param req
+ * @returns {*}
+ */
+const analysisSession = (req) => {
     global.needSetCookie = true
-    SESSION_DATA['aa'] = 1
+    global.userID = req.cookie.userID
+    if (global.userID) {
+        SESSION_DATA[global.userID] = SESSION_DATA[global.userID] || {}
+    } else {
+        global.needSetCookie = false
+        global.userID = `${Date.now()}_${Math.random()}`
+        SESSION_DATA[global.userID] = {}
+    }
+    return SESSION_DATA[global.userID]
 }
 
+const getCookieExpires = () => {
+    const d = new Date()
+    d.setTime(d.getTime() + (60*60*24*1000))
+    return d.toGMTString()
+}
 
 module.exports = serverHandle
