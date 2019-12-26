@@ -12,21 +12,20 @@ const SESSION_DATA = {}
 const serverHandle = async (req, res) => {
     res.setHeader('Content-type', 'application-json')
 
-    global.needSetCookie = false
-    global.userID = ''
     let url = req.url
     req.path = analysisUrl(url.split('?')[0])
     req.query = queryString.parse(url.split('?')[1])
     req.body = await getPostDate(req)
     req.cookie = analysisCookie(req)
-    req.session = analysisSession(req)
-
+    const quoteParam = {needSetCookie: false, userID: ''}
+    req.session = analysisSession(req, quoteParam) // 赋值得到的对象 改动影响原对象
+    console.log(quoteParam)
     /** blog路由 */
     const blogDate = handleBlogRouter(req, res)
     if (blogDate) {
         blogDate.then( (data) => {
-            global.needSetCookie || res.setHeader('Set-cookie', [
-                `userID=${global.userID};path=/;httpOnly;expires=${getCookieExpires()}`,
+            quoteParam.needSetCookie && res.setHeader('Set-cookie', [
+                `userID=${quoteParam.userID};path=/;httpOnly;expires=${getCookieExpires()}`,
             ])
             res.end(JSON.stringify(data))
         })
@@ -37,8 +36,8 @@ const serverHandle = async (req, res) => {
     const userDate = handleUserRouter(req, res)
     if (userDate) {
         userDate.then( (data) => {
-            global.needSetCookie || res.setHeader('Set-cookie', [
-                `userID=${global.userID};path=/;httpOnly;expires=${getCookieExpires()}`,
+            quoteParam.needSetCookie && res.setHeader('Set-cookie', [
+                `userID=${quoteParam.userID};path=/;httpOnly;expires=${getCookieExpires()}`,
             ])
             res.end(JSON.stringify(data))
         })
@@ -113,21 +112,25 @@ const analysisUrl = (url) => {
 /**
  * @des 解析 session
  * @param req
+ * @param quoteParam
  * @returns {*}
  */
-const analysisSession = (req) => {
-    global.needSetCookie = true
-    global.userID = req.cookie.userID
-    if (global.userID) {
-        SESSION_DATA[global.userID] = SESSION_DATA[global.userID] || {}
+const analysisSession = (req, quoteParam) => {
+    quoteParam.userID = req.cookie.userID
+    if (quoteParam.userID) {
+        SESSION_DATA[quoteParam.userID] = SESSION_DATA[quoteParam.userID] || {}
     } else {
-        global.needSetCookie = false
-        global.userID = `${Date.now()}_${Math.random()}`
-        SESSION_DATA[global.userID] = {}
+        quoteParam.needSetCookie = true
+        quoteParam.userID = `${Date.now()}_${Math.random()}`
+        SESSION_DATA[quoteParam.userID] = {}
     }
-    return SESSION_DATA[global.userID]
+    return SESSION_DATA[quoteParam.userID]
 }
 
+/**
+ * @des 设置超时时间
+ * @returns {*}
+ */
 const getCookieExpires = () => {
     const d = new Date()
     d.setTime(d.getTime() + (60*60*24*1000))
