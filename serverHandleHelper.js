@@ -1,3 +1,5 @@
+const {set, get} = require('./src/db/redis')
+
 /**
  * @des post 参数解析函数
  * @param req
@@ -63,19 +65,26 @@ const analysisUrl = (url) => {
  * @des 解析 session
  * @param req 请求
  * @param quoteParam 利用对象复制应用原理修改的参数
- * @param SESSION_DATA session容器
  * @returns {*}
  */
-const analysisSession = (req, quoteParam, SESSION_DATA) => {
+const analysisSession = async (req, quoteParam) => {
     quoteParam.userID = req.cookie.userID
-    if (quoteParam.userID) {
-        SESSION_DATA[quoteParam.userID] = SESSION_DATA[quoteParam.userID] || {}
-    } else {
+    let res = {}
+    /** 获得 userID */
+    if (!quoteParam.userID) {
         quoteParam.needSetCookie = true
         quoteParam.userID = `${Date.now()}_${Math.random()}`
-        SESSION_DATA[quoteParam.userID] = {}
+        set(quoteParam.userID, {})
     }
-    return SESSION_DATA[quoteParam.userID]
+
+    /** 从内存里获取 */
+    await get(quoteParam.userID).then((data) => {
+        console.log(data);
+        (data === null || data === undefined) ?
+            set(quoteParam.userID, {}) :
+            res = data
+    })
+    return res
 }
 
 

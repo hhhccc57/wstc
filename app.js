@@ -1,9 +1,10 @@
 const {getCookieExpires, analysisSession, analysisUrl, analysisCookie, getPostDate} = require('./serverHandleHelper')
-
+const {set, get} = require('./src/db/redis')
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
 const queryString = require('querystring')
-const SESSION_DATA = {}
+
+// const SESSION_DATA = {}
 
 /**
  * @des 服务器handle
@@ -20,7 +21,8 @@ const serverHandle = async (req, res) => {
     req.body = await getPostDate(req)
     req.cookie = analysisCookie(req)
     const quoteParam = {needSetCookie: false, userID: ''}
-    req.session = analysisSession(req, quoteParam, SESSION_DATA) // 赋值得到的对象 改动影响原对象
+    req.session = await analysisSession(req, quoteParam) // 赋值得到的对象 改动影响原对象
+    req.userID = quoteParam.userID
 
     /** blog路由 */
     const blogDate = handleBlogRouter(req, res)

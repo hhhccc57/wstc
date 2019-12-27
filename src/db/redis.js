@@ -13,7 +13,7 @@ function set(key, val) {
     redisClient.set(key, val, redis.print)
 }
 
-function get() {
+function get(key) {
     return new Promise((resolved, reject) => {
         redisClient.get(key, (err, val) => {
             if (err) {
