@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title>博客-node</title>
+    <script src="plugin/loadJS.js"></script>
+    <script>loadJS.useCss(['layUI', 'animate']);</script>
+</head>
+<body>
+
+
+
+<script>
+    loadJS.use(['layUI', 'jq', 'commFun']);
+    H(function () {
+        layui.use(['layer', 'element'], function () {
+            let layer = layui.layer;
+            layer.msg('success')
+        });
+    });
+</script>
+</body>
+</html>
