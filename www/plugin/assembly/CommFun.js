@@ -1,9 +1,9 @@
+/* eslint-disable */
 /**
  * @author WSTC
  * @date 2018/9/23 23:46
  * @des 常用函数
  */
-
 
 !function (e) {
     e.hcCFun = {

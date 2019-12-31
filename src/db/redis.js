@@ -10,7 +10,7 @@ function set(key, val) {
     if (typeof val === 'object') {
         val = JSON.stringify(val)
     }
-    redisClient.set(key, val, redis.print)
+    redisClient.set(key, val)
 }
 
 function get(key) {
